@@ -7,16 +7,16 @@ async function listContacts() {
     try {
         const data = await fs.readFile(contactsPath, "utf-8");
         const contactsList = JSON.parse(data);
-        // console.table(contactsList);
+        console.table(contactsList);
         return contactsList;
     } catch (err) {
         console.log(err);
     }
-}
+};
   
 async function getContactById(contactId) {
     try {
-        const contacts = await listContacts();
+        const contacts = JSON.parse(await fs.readFile(contactsPath, "utf-8"));
         const contact = contacts.find(item => item.id === contactId);
         console.log(contact);
         return contact;   
@@ -24,17 +24,17 @@ async function getContactById(contactId) {
         console.log(err);
     }
     
-}
+};
   
 async function removeContact(contactId) {
     try {
-        const contacts = await listContacts();
+        const contacts = JSON.parse(await fs.readFile(contactsPath, "utf-8"));
         const removedContactIndex = contacts.findIndex(contact => contact.id === contactId);
-        if (deletedContactIndex === -1) {
+        if (removedContactIndex === -1) {
             return null;
         }
           
-        const removedContact = contacts.splice(removedContactIndex, 1);
+        const [removedContact] = contacts.splice(removedContactIndex, 1);
         await fs.writeFile(contactsPath, JSON.stringify(contacts));
         console.log(removedContact);
         return removedContact;
@@ -43,11 +43,11 @@ async function removeContact(contactId) {
         console.log(error);
     }
     
-}
+};
   
 async function addContact(name, email, phone) {
     try {
-        const contacts = await listContacts();
+        const contacts = JSON.parse(await fs.readFile(contactsPath, "utf-8"));
         const id = createId(contacts);
         const newContact = {id, name, email, phone};
         contacts.push(newContact);
@@ -60,12 +60,12 @@ async function addContact(name, email, phone) {
 };
 
 function createId (list) {
-    return list.length + 1;
-}
+    return String(list.length + 1);
+};
 
 module.exports = {
     listContacts,
     getContactById,
     removeContact,
     addContact
-}
+};
